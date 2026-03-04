@@ -1,16 +1,6 @@
 namespace AiCFO.Infrastructure.Services;
 
-/// <summary>
-/// Provides the current tenant context from HTTP request.
-/// Injected as scoped service, resolves tenant per request.
-/// </summary>
-public interface ITenantContext
-{
-    Guid TenantId { get; }
-    Guid UserId { get; }
-    bool IsAuthenticated { get; }
-    string? Email { get; }
-}
+using AiCFO.Application.Common;
 
 /// <summary>
 /// Implementation of ITenantContext.

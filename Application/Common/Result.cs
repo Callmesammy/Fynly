@@ -22,6 +22,12 @@ public abstract record Result<T>
     public sealed record Success(T Data) : Result<T>;
     public sealed record Failure(string Message, string? Code = null, Dictionary<string, string[]>? Errors = null) : Result<T>;
 
+    public bool IsSuccess => this is Success;
+    public bool IsFailure => this is Failure;
+
+    public T? Value => this is Success success ? success.Data : default;
+    public string Error => this is Failure failure ? failure.Message : string.Empty;
+
     public static Result<T> Ok(T data) => new Success(data);
     public static Result<T> Fail(string message, string? code = null, Dictionary<string, string[]>? errors = null) 
         => new Failure(message, code, errors);

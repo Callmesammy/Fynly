@@ -9,6 +9,26 @@ public class ApiResponse<T>
     public T? Data { get; set; }
     public ApiError? Error { get; set; }
     public ApiMeta Meta { get; set; } = new();
+
+    public static ApiResponse<T> Ok(T? data = default)
+    {
+        return new ApiResponse<T>
+        {
+            Success = true,
+            Data = data,
+            Error = null
+        };
+    }
+
+    public static ApiResponse<T> Failure(string message, string? code = null)
+    {
+        return new ApiResponse<T>
+        {
+            Success = false,
+            Data = default,
+            Error = new ApiError { Message = message, Code = code }
+        };
+    }
 }
 
 public class ApiError

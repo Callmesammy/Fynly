@@ -19,11 +19,15 @@ public class AppDbContext : DbContext
         _tenantContext = tenantContext;
     }
 
-    // Placeholder DbSets for core entities (will be expanded with actual entities)
-    // public DbSet<User> Users { get; set; } = null!;
-    // public DbSet<Account> Accounts { get; set; } = null!;
-    // public DbSet<Transaction> Transactions { get; set; } = null!;
-    // public DbSet<Invoice> Invoices { get; set; } = null!;
+    // Core entities
+    public DbSet<User> Users { get; set; } = null!;
+
+    // Ledger entities
+    public DbSet<ChartOfAccounts> ChartsOfAccounts { get; set; } = null!;
+    public DbSet<ChartAccountEntry> ChartAccountEntries { get; set; } = null!;
+    public DbSet<JournalEntry> JournalEntries { get; set; } = null!;
+    public DbSet<JournalLine> JournalLines { get; set; } = null!;
+    public DbSet<AccountBalance> AccountBalances { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +36,13 @@ public class AppDbContext : DbContext
         // Apply global query filter for multi-tenancy
         // Automatically filters all queries by current tenant's TenantId
         ApplyGlobalQueryFilters(modelBuilder);
+
+        // Register ledger configurations
+        modelBuilder.ApplyConfiguration(new ChartOfAccountsConfiguration());
+        modelBuilder.ApplyConfiguration(new ChartAccountEntryConfiguration());
+        modelBuilder.ApplyConfiguration(new JournalEntryConfiguration());
+        modelBuilder.ApplyConfiguration(new JournalLineConfiguration());
+        modelBuilder.ApplyConfiguration(new AccountBalanceConfiguration());
 
         // Configure entity mappings and relationships
         ConfigureEntities(modelBuilder);

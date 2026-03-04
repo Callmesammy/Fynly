@@ -1,0 +1,17 @@
+Test run for C:\Users\USER\source\repos\Fynly\TestFynly\bin\Debug\net10.0\TestFynly.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.38]     TestFynly.ValueObjects.DateRangeValueObjectTests.Contains_WithDateOutsideRange_ReturnsFalse [SKIP]
+[xUnit.net 00:00:00.39]     TestFynly.ValueObjects.DateRangeValueObjectTests.CreateDateRange_WithValidDates_CreatesSuccessfully [SKIP]
+[xUnit.net 00:00:00.39]     TestFynly.ValueObjects.DateRangeValueObjectTests.Overlaps_WithNonOverlappingRange_ReturnsFalse [SKIP]
+[xUnit.net 00:00:00.39]     TestFynly.ValueObjects.DateRangeValueObjectTests.Contains_WithDateInRange_ReturnsTrue [SKIP]
+[xUnit.net 00:00:00.39]     TestFynly.ValueObjects.DateRangeValueObjectTests.Overlaps_WithOverlappingRange_ReturnsTrue [SKIP]
+  Skipped TestFynly.ValueObjects.DateRangeValueObjectTests.Contains_WithDateOutsideRange_ReturnsFalse [1 ms]
+  Skipped TestFynly.ValueObjects.DateRangeValueObjectTests.CreateDateRange_WithValidDates_CreatesSuccessfully [1 ms]
+  Skipped TestFynly.ValueObjects.DateRangeValueObjectTests.Overlaps_WithNonOverlappingRange_ReturnsFalse [1 ms]
+  Skipped TestFynly.ValueObjects.DateRangeValueObjectTests.Contains_WithDateInRange_ReturnsTrue [1 ms]
+  Skipped TestFynly.ValueObjects.DateRangeValueObjectTests.Overlaps_WithOverlappingRange_ReturnsTrue [1 ms]
+
+Passed!  - Failed:     0, Passed:    47, Skipped:     5, Total:    52, Duration: 202 ms - TestFynly.dll (net10.0)
