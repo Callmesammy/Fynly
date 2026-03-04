@@ -117,15 +117,26 @@
 ---
 
 ### 🔵 Checkpoint 1.5: Multi-Tenancy Infrastructure
-- [ ] ITenantContext service
-- [ ] TenantMiddleware
-- [ ] EF Global Query Filters
+- [x] ITenantContext service
+- [x] TenantMiddleware
+- [x] EF Global Query Filters
 
-**Status:** 🟡 Ready to proceed
+**Status:** ✅ COMPLETED
+**Build Status:** ✅ GREEN (0 errors, 0 warnings)
+
+**Deliverables:**
+- ✅ ITenantContext interface + TenantContext implementation (scoped service)
+- ✅ Extracts tenant_id, user_id (or "sub"), email from JWT claims
+- ✅ TenantMiddleware with public endpoint whitelisting
+- ✅ AppDbContext with Global Query Filters
+- ✅ Automatic multi-tenant data isolation via HasQueryFilter()
+- ✅ Audit field automation (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, soft delete)
+- ✅ DbContext registration in Program.cs with Npgsql + retry policy
+- ✅ IHttpContextAccessor dependency injection
 
 ---
 
-### Checkpoint 1.6: Authentication Setup
+### 🟡 Checkpoint 1.6: Authentication Setup
 - [ ] ASP.NET Identity configuration
 - [ ] JWT token generation
 - [ ] Auth endpoints (Register, Login, Refresh, Logout)

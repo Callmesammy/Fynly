@@ -1,4 +1,6 @@
 using AiCFO.API.Middleware;
+using AiCFO.Infrastructure.Persistence;
+using AiCFO.Infrastructure.Services;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -17,6 +19,22 @@ builder.Services.AddControllers();
 
 // API Documentation with Scalar
 builder.Services.AddOpenApi();
+
+// Multi-Tenancy
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddHttpContextAccessor();
+
+// Entity Framework Core with PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Host=localhost;Port=5432;Database=aicfo;Username=postgres;Password=postgres";
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
+    var tenantContext = sp.GetService<ITenantContext>();
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorCodesToAdd: null);
+    });
+});
 
 // CQRS with MediatR
 builder.Services.AddMediatR(config => 
@@ -50,6 +68,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 
 // Custom middleware
+app.UseMiddleware<TenantMiddleware>();
 app.UseMiddleware<RequestIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

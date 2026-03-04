@@ -12,6 +12,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Infrastructure\Services\TenantContext.cs" />
     <None Include="PROGRESS.md" />
     <None Include="READY_FOR_CHECKPOINT_1.2.md" />
   </ItemGroup>
