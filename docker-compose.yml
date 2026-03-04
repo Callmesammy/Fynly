@@ -1,0 +1,6 @@
+services:
+  fynly:
+    image: ${DOCKER_REGISTRY-}fynly
+    build:
+      context: .
+      dockerfile: Fynly/Dockerfile

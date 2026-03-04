@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Src/">
+    <Project Path="Application/Application.csproj" />
+    <Project Path="Domain/Domain.csproj" />
+    <Project Path="Fynly/Fynly.csproj" />
+    <Project Path="Infastructure/Infastructure.csproj" />
+    <Project Path="TestFynly/TestFynly.csproj" />
+  </Folder>
+  <Folder Name="/Src/_Guide/">
+    <File Path="CLAUDE.md" />
+    <File Path="FEAUTURES.md" />
+    <File Path="PLAN.md" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
