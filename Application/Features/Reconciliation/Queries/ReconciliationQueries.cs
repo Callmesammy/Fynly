@@ -78,7 +78,7 @@ public class GetReconciliationMatchesQueryHandler : IRequestHandler<GetReconcili
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving reconciliation matches");
-            return Result<List<ReconciliationMatchDto>>.Failure($"Failed to retrieve matches: {ex.Message}");
+            return Result<List<ReconciliationMatchDto>>.Fail($"Failed to retrieve matches: {ex.Message}");
         }
     }
 }
@@ -139,7 +139,7 @@ public class GetUnmatchedBankTransactionsQueryHandler : IRequestHandler<GetUnmat
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving unmatched bank transactions");
-            return Result<List<UnmatchedBankTransactionDto>>.Failure($"Failed to retrieve unmatched transactions: {ex.Message}");
+            return Result<List<UnmatchedBankTransactionDto>>.Fail($"Failed to retrieve unmatched transactions: {ex.Message}");
         }
     }
 }
@@ -200,7 +200,7 @@ public class GetUnmatchedJournalEntriesQueryHandler : IRequestHandler<GetUnmatch
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving unmatched journal entries");
-            return Result<List<UnmatchedJournalEntryDto>>.Failure($"Failed to retrieve unmatched entries: {ex.Message}");
+            return Result<List<UnmatchedJournalEntryDto>>.Fail($"Failed to retrieve unmatched entries: {ex.Message}");
         }
     }
 }
@@ -261,7 +261,7 @@ public class GetReconciliationStatsQueryHandler : IRequestHandler<GetReconciliat
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving reconciliation stats");
-            return Result<ReconciliationStatsDto>.Failure($"Failed to retrieve stats: {ex.Message}");
+            return Result<ReconciliationStatsDto>.Fail($"Failed to retrieve stats: {ex.Message}");
         }
     }
 }
@@ -327,7 +327,7 @@ public class GetReconciliationHealthQueryHandler : IRequestHandler<GetReconcilia
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving reconciliation health");
-            return Result<ReconciliationHealthReportDto>.Failure($"Failed to retrieve health report: {ex.Message}");
+            return Result<ReconciliationHealthReportDto>.Fail($"Failed to retrieve health report: {ex.Message}");
         }
     }
 }

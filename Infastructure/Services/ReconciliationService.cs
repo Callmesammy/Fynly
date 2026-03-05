@@ -414,7 +414,7 @@ public class ReconciliationService : IReconciliationService
                     id: Guid.NewGuid(),
                     tenantId: tenantId,
                     bankTransactionId: bankTx.Id,
-                    transactionReference: bankTx.BankTransactionReference,
+                    transactionReference: bankTx.Reference ?? bankTx.BankTransactionId,
                     amount: bankTx.Amount,
                     transactionDate: bankTx.TransactionDate,
                     description: bankTx.Description,
@@ -573,12 +573,12 @@ public class ReconciliationService : IReconciliationService
         var totalMatchedAmount = matches
             .Where(m => m.Status == ReconciliationStatus.Confirmed)
             .Select(m => m.VarianceAmount.Amount)
-            .FirstOrDefault() ?? Money.Create(0, CurrencyCode.NGN);
+            .FirstOrDefault() ?? Money.Create(0, Currency.NGN.Code);
 
         var unmatchedBankTransactions = await GetUnmatchedBankTransactionsAsync(tenantId, 0, cancellationToken);
         var unmatchedJournalEntries = await GetUnmatchedJournalEntriesAsync(tenantId, 0, cancellationToken);
 
-        var totalUnmatchedAmount = Money.Create(0, CurrencyCode.NGN);
+        var totalUnmatchedAmount = Money.Create(0, Currency.NGN.Code);
         foreach (var unmatched in unmatchedBankTransactions)
         {
             totalUnmatchedAmount = totalUnmatchedAmount.Add(unmatched.Amount);
@@ -610,52 +610,58 @@ public class ReconciliationService : IReconciliationService
         Guid tenantId,
         CancellationToken cancellationToken)
     {
-        var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+        var stats = await GetReconciliationStatsAsync(tenantId, null, null, cancellationToken);
+        var unmatchedBankTransactions = await GetUnmatchedBankTransactionsAsync(tenantId, 30, cancellationToken);  // 30+ days old
+        var unmatchedJournalEntries = await GetUnmatchedJournalEntriesAsync(tenantId, 30, cancellationToken);
 
-        // Get aged unmatched items
-        var agedUnmatched = await GetUnmatchedBankTransactionsAsync(tenantId, 30, cancellationToken);
-        var agedUnmatchedAmount = Money.Create(0, CurrencyCode.NGN);
-        foreach (var item in agedUnmatched)
+        var agedUnmatchedAmount = Money.Create(0, Currency.NGN.Code);
+        foreach (var unmatched in unmatchedBankTransactions)
         {
-            agedUnmatchedAmount = agedUnmatchedAmount.Add(item.Amount);
+            agedUnmatchedAmount = agedUnmatchedAmount.Add(unmatched.Amount);
         }
 
-        // Get low confidence matches
         var lowConfidenceMatches = await _context.ReconciliationMatches
             .Where(m => m.TenantId == tenantId && m.MatchScore.ConfidencePercentage < 60)
             .CountAsync(cancellationToken);
 
-        // Get high variance matches
         var allMatches = await _context.ReconciliationMatches
             .Where(m => m.TenantId == tenantId)
             .ToListAsync(cancellationToken);
 
-        var highVarianceCount = allMatches.Count(m => m.VarianceAmount.IsSignificant);
-        var highVariancePercentage = allMatches.Count > 0 ? (highVarianceCount * 100m) / allMatches.Count : 0;
+        var totalMatches = allMatches.Count;
+        var highVarianceCount = allMatches.Count(m => m.VarianceAmount.Percentage > 1);
+        var highVariancePercentage = totalMatches > 0 ? (highVarianceCount * 100m) / totalMatches : 0;
 
-        // Determine health status
-        var healthStatus = (lowConfidenceMatches, agedUnmatched.Count, highVariancePercentage) switch
+        var healthStatus = stats.MatchRate switch
         {
-            (< 5, < 10, < 5) => "Excellent",
-            (< 10, < 20, < 10) => "Good",
-            (< 20, < 30, < 15) => "Fair",
-            _ => "Poor"
+            >= 95 => "Excellent",
+            >= 80 => "Good",
+            >= 60 => "Fair",
+            >= 40 => "Poor",
+            _ => "Critical"
         };
 
         var recommendations = new List<string>();
-        if (lowConfidenceMatches > 0)
-            recommendations.Add($"Review {lowConfidenceMatches} low-confidence matches");
-        if (agedUnmatched.Count > 0)
-            recommendations.Add($"Investigate {agedUnmatched.Count} aged unmatched transactions");
-        if (highVariancePercentage > 10)
-            recommendations.Add("Review transactions with significant variances");
-        if (recommendations.Count == 0)
-            recommendations.Add("Reconciliation is in good standing");
+
+        if (stats.MatchRate < 80)
+            recommendations.Add("Consider reviewing unmatched transactions for manual reconciliation");
+
+        if (stats.AverageMatchConfidence < 70)
+            recommendations.Add("Some matches have low confidence scores - review and adjust matching thresholds");
+
+        if (unmatchedBankTransactions.Count > 100)
+            recommendations.Add("Large number of aged unmatched bank transactions - prioritize reconciliation");
+
+        if (unmatchedJournalEntries.Count > 50)
+            recommendations.Add("Significant aged unmatched journal entries - verify data entry quality");
+
+        if (stats.PendingMatches > 0)
+            recommendations.Add($"{stats.PendingMatches} proposed matches awaiting confirmation");
 
         return new ReconciliationHealthReport
         {
             GeneratedAt = DateTime.UtcNow,
-            AgedUnmatchedCount = agedUnmatched.Count,
+            AgedUnmatchedCount = unmatchedBankTransactions.Count + unmatchedJournalEntries.Count,
             AgedUnmatchedAmount = agedUnmatchedAmount,
             LowConfidenceMatchCount = lowConfidenceMatches,
             HighVariancePercentage = highVariancePercentage,

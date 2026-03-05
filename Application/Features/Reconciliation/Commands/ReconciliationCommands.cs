@@ -44,7 +44,7 @@ public class FindAndCreateMatchesCommandHandler : IRequestHandler<FindAndCreateM
         {
             _logger.LogInformation("Starting auto-matching for tenant {TenantId}", _tenantContext.TenantId);
 
-            var bankTransactions = (await _bankService.GetUnreconciledBankTransactionsAsync(_tenantContext.TenantId, cancellationToken)).ToList();
+            var bankTransactions = (await _bankService.GetUnreconciledTransactionsAsync(_tenantContext.TenantId, cancellationToken)).ToList();
             var journalEntries = await _ledgerService.GetJournalEntriesByDateRangeAsync(
                 _tenantContext.TenantId,
                 DateTime.UtcNow.AddMonths(-3),
@@ -218,7 +218,7 @@ public class RejectReconciliationMatchCommandHandler : IRequestHandler<RejectRec
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rejecting match {MatchId}", request.MatchId);
-            return Result<bool>.Failure($"Failed to reject match: {ex.Message}");
+            return Result<bool>.Fail($"Failed to reject match: {ex.Message}");
         }
     }
 }
@@ -270,7 +270,7 @@ public class CreateReconciliationSessionCommandHandler : IRequestHandler<CreateR
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating reconciliation session");
-            return Result<Guid>.Failure($"Failed to create session: {ex.Message}");
+            return Result<Guid>.Fail($"Failed to create session: {ex.Message}");
         }
     }
 }

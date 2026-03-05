@@ -328,3 +328,4 @@ public class UnmatchedJournalEntryConfiguration : IEntityTypeConfiguration<Unmat
             .HasDatabaseName("IX_UnmatchedJournalEntries_CreatedAt");
     }
 }
+

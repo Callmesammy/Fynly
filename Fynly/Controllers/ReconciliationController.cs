@@ -56,15 +56,15 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(command, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<MatchingResult>.Error(result.Error);
+                return ApiResponse<MatchingResult>.Failure(result.Error);
 
             _logger.LogInformation("Auto-matching completed: {Result}", result.Value);
-            return ApiResponse<MatchingResult>.Success(result.Value);
+            return ApiResponse<MatchingResult>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Auto-matching error");
-            return ApiResponse<MatchingResult>.Error($"Auto-matching failed: {ex.Message}");
+            return ApiResponse<MatchingResult>.Failure($"Auto-matching failed: {ex.Message}");
         }
     }
 
@@ -102,14 +102,14 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(query, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<List<ReconciliationMatchDto>>.Error(result.Error);
+                return ApiResponse<List<ReconciliationMatchDto>>.Failure(result.Error);
 
-            return ApiResponse<List<ReconciliationMatchDto>>.Success(result.Value);
+            return ApiResponse<List<ReconciliationMatchDto>>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving matches");
-            return ApiResponse<List<ReconciliationMatchDto>>.Error($"Failed to retrieve matches: {ex.Message}");
+            return ApiResponse<List<ReconciliationMatchDto>>.Failure($"Failed to retrieve matches: {ex.Message}");
         }
     }
 
@@ -142,15 +142,15 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(command, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<bool>.Error(result.Error);
+                return ApiResponse<bool>.Failure(result.Error);
 
             _logger.LogInformation("Match {MatchId} confirmed", matchId);
-            return ApiResponse<bool>.Success(true);
+            return ApiResponse<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error confirming match {MatchId}", matchId);
-            return ApiResponse<bool>.Error($"Failed to confirm match: {ex.Message}");
+            return ApiResponse<bool>.Failure($"Failed to confirm match: {ex.Message}");
         }
     }
 
@@ -175,7 +175,7 @@ public class ReconciliationController : ControllerBase
         try
         {
             if (string.IsNullOrWhiteSpace(request.Reason))
-                return ApiResponse<bool>.Error("Reason is required");
+                return ApiResponse<bool>.Failure("Reason is required");
 
             var command = new RejectReconciliationMatchCommand
             {
@@ -186,15 +186,15 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(command, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<bool>.Error(result.Error);
+                return ApiResponse<bool>.Failure(result.Error);
 
             _logger.LogInformation("Match {MatchId} rejected: {Reason}", matchId, request.Reason);
-            return ApiResponse<bool>.Success(true);
+            return ApiResponse<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error rejecting match {MatchId}", matchId);
-            return ApiResponse<bool>.Error($"Failed to reject match: {ex.Message}");
+            return ApiResponse<bool>.Failure($"Failed to reject match: {ex.Message}");
         }
     }
 
@@ -218,14 +218,14 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(query, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<List<UnmatchedBankTransactionDto>>.Error(result.Error);
+                return ApiResponse<List<UnmatchedBankTransactionDto>>.Failure(result.Error);
 
-            return ApiResponse<List<UnmatchedBankTransactionDto>>.Success(result.Value);
+            return ApiResponse<List<UnmatchedBankTransactionDto>>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving unmatched bank transactions");
-            return ApiResponse<List<UnmatchedBankTransactionDto>>.Error($"Failed to retrieve unmatched transactions: {ex.Message}");
+            return ApiResponse<List<UnmatchedBankTransactionDto>>.Failure($"Failed to retrieve unmatched transactions: {ex.Message}");
         }
     }
 
@@ -249,14 +249,14 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(query, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<List<UnmatchedJournalEntryDto>>.Error(result.Error);
+                return ApiResponse<List<UnmatchedJournalEntryDto>>.Failure(result.Error);
 
-            return ApiResponse<List<UnmatchedJournalEntryDto>>.Success(result.Value);
+            return ApiResponse<List<UnmatchedJournalEntryDto>>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving unmatched journal entries");
-            return ApiResponse<List<UnmatchedJournalEntryDto>>.Error($"Failed to retrieve unmatched entries: {ex.Message}");
+            return ApiResponse<List<UnmatchedJournalEntryDto>>.Failure($"Failed to retrieve unmatched entries: {ex.Message}");
         }
     }
 
@@ -287,14 +287,14 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(query, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<ReconciliationStatsDto>.Error(result.Error);
+                return ApiResponse<ReconciliationStatsDto>.Failure(result.Error);
 
-            return ApiResponse<ReconciliationStatsDto>.Success(result.Value);
+            return ApiResponse<ReconciliationStatsDto>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving reconciliation stats");
-            return ApiResponse<ReconciliationStatsDto>.Error($"Failed to retrieve stats: {ex.Message}");
+            return ApiResponse<ReconciliationStatsDto>.Failure($"Failed to retrieve stats: {ex.Message}");
         }
     }
 
@@ -315,15 +315,15 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(query, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<ReconciliationHealthReportDto>.Error(result.Error);
+                return ApiResponse<ReconciliationHealthReportDto>.Failure(result.Error);
 
             _logger.LogInformation("Reconciliation health: {Status}", result.Value.HealthStatus);
-            return ApiResponse<ReconciliationHealthReportDto>.Success(result.Value);
+            return ApiResponse<ReconciliationHealthReportDto>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving reconciliation health");
-            return ApiResponse<ReconciliationHealthReportDto>.Error($"Failed to retrieve health report: {ex.Message}");
+            return ApiResponse<ReconciliationHealthReportDto>.Failure($"Failed to retrieve health report: {ex.Message}");
         }
     }
 
@@ -345,7 +345,7 @@ public class ReconciliationController : ControllerBase
         try
         {
             if (string.IsNullOrWhiteSpace(request.SessionName))
-                return ApiResponse<Guid>.Error("Session name is required");
+                return ApiResponse<Guid>.Failure("Session name is required");
 
             var command = new CreateReconciliationSessionCommand
             {
@@ -356,15 +356,15 @@ public class ReconciliationController : ControllerBase
             var result = await _mediator.Send(command, cancellationToken);
 
             if (!result.IsSuccess)
-                return ApiResponse<Guid>.Error(result.Error);
+                return ApiResponse<Guid>.Failure(result.Error);
 
             _logger.LogInformation("Created session {SessionId}", result.Value);
-            return ApiResponse<Guid>.Success(result.Value);
+            return ApiResponse<Guid>.Ok(result.Value);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating reconciliation session");
-            return ApiResponse<Guid>.Error($"Failed to create session: {ex.Message}");
+            return ApiResponse<Guid>.Failure($"Failed to create session: {ex.Message}");
         }
     }
 }

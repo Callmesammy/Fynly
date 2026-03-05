@@ -9,6 +9,8 @@ global using AutoMapper;
 global using Microsoft.Extensions.Logging;
 global using AiCFO.Domain.Entities;
 global using AiCFO.Domain.Abstractions;
+global using AiCFO.Domain.ValueObjects;
+global using AiCFO.Domain.Rules;
 global using AiCFO.Application.Common;
 global using AiCFO.Application.Dtos.Auth;
 global using AiCFO.Application.Features.Auth.Commands;

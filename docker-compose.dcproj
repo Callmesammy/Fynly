@@ -9,6 +9,8 @@
     <None Include=".editorconfig" />
     <None Include="API_USAGE_EXAMPLES.md" />
     <None Include="CHECKPOINT_3_3_1_COMPLETE.md" />
+    <None Include="CHECKPOINT_3_3_3_PLAN.md" />
+    <None Include="CHECKPOINT_4_1_1_COMPLETE.md" />
     <None Include="COMPLETE_TEST_SUMMARY.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
@@ -17,7 +19,6 @@
     <None Include=".dockerignore" />
     <None Include="DOCUMENTATION_INDEX.md" />
     <None Include="FINAL_TEST_REPORT.md" />
-    <None Include="Infrastructure\Services\ReconciliationService.cs" />
     <None Include="Infrastructure\Services\TenantContext.cs" />
     <None Include="INTEGRATION_TEST_SCENARIOS.md" />
     <None Include="OAUTH2_REFERENCE.md" />
