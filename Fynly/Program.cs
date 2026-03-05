@@ -85,16 +85,10 @@ builder.Services.AddHangfire(config =>
     config
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
         .UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings()
-        .UsePostgreSqlStorage(hangfireConnectionString);
+        .UseRecommendedSerializerSettings();
 });
-builder.Services.AddHangfireServer(options =>
-{
-    options.WorkerCount = Environment.ProcessorCount;
-    options.Queues = new[] { "default", "critical", "scheduled" };
-    options.SchedulePollingInterval = TimeSpan.FromSeconds(30);
-});
-builder.Services.AddScoped<IBackgroundJobService, AiCFO.Infrastructure.Services.RecurringJobScheduler>();
+builder.Services.AddHangfireServer();
+builder.Services.AddScoped<IBackgroundJobService, RecurringJobScheduler>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!";
 var key = Encoding.ASCII.GetBytes(jwtSecret);

@@ -14,6 +14,8 @@
     <None Include="CHECKPOINT_4_1_2_STATUS.md" />
     <None Include="CHECKPOINT_4_1_3_COMPLETE.md" />
     <None Include="CHECKPOINT_4_1_4_COMPLETE.md" />
+    <None Include="CHECKPOINT_4_2_1_COMPLETE.md" />
+    <None Include="CHECKPOINT_4_2_1_TEST_VERIFICATION.md" />
     <None Include="COMPLETE_TEST_SUMMARY.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
@@ -22,7 +24,6 @@
     <None Include=".dockerignore" />
     <None Include="DOCUMENTATION_INDEX.md" />
     <None Include="FINAL_TEST_REPORT.md" />
-    <None Include="Infrastructure\Services\RecurringJobScheduler.cs" />
     <None Include="Infrastructure\Services\TenantContext.cs" />
     <None Include="INTEGRATION_TEST_SCENARIOS.md" />
     <None Include="OAUTH2_REFERENCE.md" />
@@ -31,9 +32,12 @@
     <None Include="PHASE_3_2_CHECKPOINT.md" />
     <None Include="PHASE_3_3_QUICK_REFERENCE.md" />
     <None Include="PHASE_4_1_COMPLETE.md" />
+    <None Include="PHASE_4_2_1_QUICK_REFERENCE.md" />
+    <None Include="PHASE_4_STATUS_OVERVIEW.md" />
     <None Include="PROGRESS.md" />
     <None Include="READY_FOR_CHECKPOINT_1.2.md" />
     <None Include="SESSION_SUMMARY.md" />
+    <None Include="SESSION_SUMMARY_PHASE_4_2_1.md" />
     <None Include="TEST_AND_VALIDATION_REPORT.md" />
   </ItemGroup>
   <ItemGroup>

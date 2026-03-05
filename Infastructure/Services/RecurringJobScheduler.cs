@@ -83,7 +83,6 @@ public class RecurringJobScheduler : IBackgroundJobService
                 cronExpression,
                 new RecurringJobOptions
                 {
-                    Queue = "default",
                     TimeZone = TimeZoneInfo.Utc,
                 });
 
