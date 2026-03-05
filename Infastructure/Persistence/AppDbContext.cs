@@ -29,6 +29,18 @@ public class AppDbContext : DbContext
     public DbSet<JournalLine> JournalLines { get; set; } = null!;
     public DbSet<AccountBalance> AccountBalances { get; set; } = null!;
 
+    // Bank entities
+    public DbSet<BankConnection> BankConnections { get; set; } = null!;
+    public DbSet<BankAccount> BankAccounts { get; set; } = null!;
+    public DbSet<BankTransaction> BankTransactions { get; set; } = null!;
+
+    // Reconciliation entities
+    public DbSet<ReconciliationMatch> ReconciliationMatches { get; set; } = null!;
+    public DbSet<ReconciliationAuditLog> ReconciliationAuditLogs { get; set; } = null!;
+    public DbSet<ReconciliationSession> ReconciliationSessions { get; set; } = null!;
+    public DbSet<UnmatchedBankTransaction> UnmatchedBankTransactions { get; set; } = null!;
+    public DbSet<UnmatchedJournalEntry> UnmatchedJournalEntries { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -43,6 +55,18 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new JournalEntryConfiguration());
         modelBuilder.ApplyConfiguration(new JournalLineConfiguration());
         modelBuilder.ApplyConfiguration(new AccountBalanceConfiguration());
+
+        // Register bank configurations
+        modelBuilder.ApplyConfiguration(new BankConnectionConfiguration());
+        modelBuilder.ApplyConfiguration(new BankAccountConfiguration());
+        modelBuilder.ApplyConfiguration(new BankTransactionConfiguration());
+
+        // Register reconciliation configurations
+        modelBuilder.ApplyConfiguration(new ReconciliationMatchConfiguration());
+        modelBuilder.ApplyConfiguration(new ReconciliationAuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new ReconciliationSessionConfiguration());
+        modelBuilder.ApplyConfiguration(new UnmatchedBankTransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new UnmatchedJournalEntryConfiguration());
 
         // Configure entity mappings and relationships
         ConfigureEntities(modelBuilder);

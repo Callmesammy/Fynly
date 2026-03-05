@@ -1,6 +1,8 @@
 using AiCFO.API.Middleware;
+using AiCFO.Application.Services;
 using AiCFO.Infrastructure.Persistence;
 using AiCFO.Infrastructure.Services;
+using AiCFO.Infrastructure.BankIntegration;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -48,6 +50,24 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Ledger Services
 builder.Services.AddScoped<ILedgerService, LedgerService>();
+
+// Bank Services
+builder.Services.AddScoped<IBankService, BankService>();
+
+// Bank Provider Integration (OAuth2 & API calls)
+builder.Services.AddHttpClient<FlutterwaveProvider>()
+    .ConfigureHttpClient(client =>
+    {
+        client.BaseAddress = new Uri("https://api.flutterwave.com");
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
+builder.Services.AddScoped<IBankProviderFactory, BankProviderFactory>();
+
+// Reconciliation Services
+builder.Services.AddScoped<IReconciliationService, ReconciliationService>();
+
+// Accounting Validation & Rules
+builder.Services.AddScoped<IAccountingValidationService, AccountingValidationService>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!";
 var key = Encoding.ASCII.GetBytes(jwtSecret);

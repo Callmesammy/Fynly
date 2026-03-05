@@ -1,5 +1,6 @@
 namespace AiCFO.Application.Features.Ledger.Commands;
 
+using AiCFO.Application.Services;
 using AiCFO.Domain.Entities;
 using AiCFO.Domain.ValueObjects;
 
@@ -26,15 +27,21 @@ public class AddJournalLineCommand : IRequest<Result<bool>>
 
 /// <summary>
 /// Handler for adding a line to a journal entry.
+/// Validates line data according to accounting rules before adding.
 /// </summary>
 public class AddJournalLineCommandHandler : IRequestHandler<AddJournalLineCommand, Result<bool>>
 {
     private readonly ILedgerService _ledgerService;
+    private readonly IAccountingValidationService _validationService;
     private readonly ITenantContext _tenantContext;
 
-    public AddJournalLineCommandHandler(ILedgerService ledgerService, ITenantContext tenantContext)
+    public AddJournalLineCommandHandler(
+        ILedgerService ledgerService,
+        IAccountingValidationService validationService,
+        ITenantContext tenantContext)
     {
         _ledgerService = ledgerService ?? throw new ArgumentNullException(nameof(ledgerService));
+        _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
         _tenantContext = tenantContext ?? throw new ArgumentNullException(nameof(tenantContext));
     }
 
@@ -44,6 +51,11 @@ public class AddJournalLineCommandHandler : IRequestHandler<AddJournalLineComman
         {
             var accountCode = new AccountCode(request.AccountCode);
             var money = Money.Create(request.Amount, CurrencyCode.NGN); // TODO: Get currency from journal entry
+
+            // Validate line data
+            var lineValidation = _validationService.ValidateTransactionLine(money, request.Description);
+            if (!lineValidation.IsValid)
+                return Result<bool>.Fail(lineValidation.ErrorMessage);
 
             var success = await _ledgerService.AddJournalLineAsync(
                 _tenantContext.TenantId,

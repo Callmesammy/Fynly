@@ -1,5 +1,6 @@
 namespace AiCFO.Application.Features.Ledger.Commands;
 
+using AiCFO.Application.Services;
 using AiCFO.Domain.Entities;
 using AiCFO.Domain.ValueObjects;
 
@@ -18,15 +19,21 @@ public class PostJournalEntryCommand : IRequest<Result<bool>>
 
 /// <summary>
 /// Handler for posting a journal entry.
+/// Uses accounting validation rules to ensure entry is compliant before posting.
 /// </summary>
 public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCommand, Result<bool>>
 {
     private readonly ILedgerService _ledgerService;
+    private readonly IAccountingValidationService _validationService;
     private readonly ITenantContext _tenantContext;
 
-    public PostJournalEntryCommandHandler(ILedgerService ledgerService, ITenantContext tenantContext)
+    public PostJournalEntryCommandHandler(
+        ILedgerService ledgerService,
+        IAccountingValidationService validationService,
+        ITenantContext tenantContext)
     {
         _ledgerService = ledgerService ?? throw new ArgumentNullException(nameof(ledgerService));
+        _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
         _tenantContext = tenantContext ?? throw new ArgumentNullException(nameof(tenantContext));
     }
 
@@ -34,6 +41,25 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
     {
         try
         {
+            // Retrieve the journal entry
+            var entry = await _ledgerService.GetJournalEntryAsync(
+                _tenantContext.TenantId,
+                request.JournalEntryId,
+                cancellationToken);
+
+            if (entry == null)
+                return Result<bool>.Fail("Journal entry not found");
+
+            // Validate using accounting rules
+            var validationResult = _validationService.ValidateJournalEntry(
+                entry.TotalDebits,
+                entry.TotalCredits,
+                entry.Lines.Count);
+
+            if (!validationResult.IsValid)
+                return Result<bool>.Fail(validationResult.ErrorMessage);
+
+            // Post the entry
             var success = await _ledgerService.PostJournalEntryAsync(
                 _tenantContext.TenantId,
                 request.JournalEntryId,

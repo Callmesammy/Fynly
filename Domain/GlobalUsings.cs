@@ -5,3 +5,4 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using AiCFO.Domain.Abstractions;
 global using AiCFO.Domain.ValueObjects;
+global using AiCFO.Domain.Rules;
