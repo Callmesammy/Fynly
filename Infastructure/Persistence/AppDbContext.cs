@@ -41,6 +41,16 @@ public class AppDbContext : DbContext
     public DbSet<UnmatchedBankTransaction> UnmatchedBankTransactions { get; set; } = null!;
     public DbSet<UnmatchedJournalEntry> UnmatchedJournalEntries { get; set; } = null!;
 
+    // Alert entities
+    public DbSet<AlertNotification> Alerts { get; set; } = null!;
+
+    // Health report entities
+    public DbSet<HealthReport> Reports { get; set; } = null!;
+
+    // Predictive alert entities
+    public DbSet<PredictiveThreshold> PredictiveThresholds { get; set; } = null!;
+    public DbSet<PredictiveAlert> PredictiveAlerts { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -67,6 +77,16 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ReconciliationSessionConfiguration());
         modelBuilder.ApplyConfiguration(new UnmatchedBankTransactionConfiguration());
         modelBuilder.ApplyConfiguration(new UnmatchedJournalEntryConfiguration());
+
+        // Register alert configurations
+        modelBuilder.ApplyConfiguration(new AlertNotificationConfiguration());
+
+        // Register health report configurations
+        modelBuilder.ApplyConfiguration(new HealthReportConfiguration());
+
+        // Register predictive alert configurations
+        modelBuilder.ApplyConfiguration(new PredictiveThresholdConfiguration());
+        modelBuilder.ApplyConfiguration(new PredictiveAlertConfiguration());
 
         // Configure entity mappings and relationships
         ConfigureEntities(modelBuilder);

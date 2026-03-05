@@ -1,6 +1,82 @@
+version: '3.9'
+
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: aicfo-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aicfo
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aicfo-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: aicfo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aicfo-network
+
+  # AI CFO API
   fynly:
-    image: ${DOCKER_REGISTRY-}fynly
     build:
       context: .
-      dockerfile: Fynly/Dockerfile
+      dockerfile: Dockerfile
+    container_name: aicfo-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=aicfo;Username=postgres;Password=postgres"
+      ConnectionStrings__HangfireConnection: "Host=postgres;Port=5432;Database=aicfo_hangfire;Username=postgres;Password=postgres"
+      Redis__ConnectionString: "redis:6379"
+      Jwt__Secret: "your-super-secret-key-min-32-characters-long!!"
+      Jwt__Issuer: "ai-cfo"
+      Jwt__Audience: "ai-cfo-api"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aicfo-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  aicfo-network:
+    driver: bridge

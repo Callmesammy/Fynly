@@ -7,6 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include=".env.example" />
+    <None Include="API_TESTING_EXAMPLES.md" />
     <None Include="API_USAGE_EXAMPLES.md" />
     <None Include="CHECKPOINT_3_3_1_COMPLETE.md" />
     <None Include="CHECKPOINT_3_3_3_PLAN.md" />
@@ -16,16 +18,26 @@
     <None Include="CHECKPOINT_4_1_4_COMPLETE.md" />
     <None Include="CHECKPOINT_4_2_1_COMPLETE.md" />
     <None Include="CHECKPOINT_4_2_1_TEST_VERIFICATION.md" />
+    <None Include="CHECKPOINT_4_2_2_COMPLETE.md" />
+    <None Include="CHECKPOINT_4_2_3_COMPLETE.md" />
     <None Include="COMPLETE_TEST_SUMMARY.md" />
+    <None Include="CORS_AND_FRONTEND_GUIDE.md" />
+    <None Include="DEPLOYMENT_AND_CORS_SUMMARY.md" />
+    <None Include="DEPLOYMENT_GUIDE.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Dockerfile" />
     <None Include="DOCUMENTATION_INDEX.md" />
+    <None Include="DOCUMENTATION_INDEX_COMPLETE.md" />
     <None Include="FINAL_TEST_REPORT.md" />
-    <None Include="Infrastructure\Services\TenantContext.cs" />
+    <None Include="Infastructure\Jobs\ScheduledHealthReportJob.cs" />
+    <None Include="Infastructure\Persistence\AppDbContext.cs" />
+    <None Include="Infastructure\Services\TenantContext.cs" />
     <None Include="INTEGRATION_TEST_SCENARIOS.md" />
+    <None Include="NEXT_STEPS.md" />
     <None Include="OAUTH2_REFERENCE.md" />
     <None Include="PHASE_2_COMPLETE.md" />
     <None Include="PHASE_3_1_CHECKPOINT.md" />
@@ -33,15 +45,25 @@
     <None Include="PHASE_3_3_QUICK_REFERENCE.md" />
     <None Include="PHASE_4_1_COMPLETE.md" />
     <None Include="PHASE_4_2_1_QUICK_REFERENCE.md" />
+    <None Include="PHASE_4_2_4_COMPLETE.md" />
     <None Include="PHASE_4_STATUS_OVERVIEW.md" />
     <None Include="PROGRESS.md" />
+    <None Include="PROJECT_COMPLETE.md" />
+    <None Include="QUICK_START.md" />
     <None Include="READY_FOR_CHECKPOINT_1.2.md" />
     <None Include="SESSION_SUMMARY.md" />
     <None Include="SESSION_SUMMARY_PHASE_4_2_1.md" />
     <None Include="TEST_AND_VALIDATION_REPORT.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Infrastructure\BackgroundJobs\" />
-    <Folder Include="Infrastructure\Persistence\Configurations\" />
+    <Folder Include="Infastructure\BackgroundJobs\" />
+    <Folder Include="Infastructure\Persistence\Configurations\" />
+    <Folder Include="Infastructure\Services\" />
+    <Folder Include="Infastructure\Persistence\" />
+    <Folder Include="Infastructure\BankIntegration\" />
+    <Folder Include="Infastructure\Jobs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ServiceName Include="api" />
   </ItemGroup>
 </Project>

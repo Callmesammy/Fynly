@@ -1,11 +1,13 @@
 using AiCFO.API.Middleware;
 using AiCFO.Application.Services;
+using AiCFO.Application.Common;
+using AiCFO.Infastructure.Services;
 using AiCFO.Infrastructure.Persistence;
 using AiCFO.Infrastructure.Services;
-using AiCFO.Infastructure.Services;
 using AiCFO.Infrastructure.BankIntegration;
 using AiCFO.Application.Features.BackgroundJobs;
 using Hangfire;
+using Hangfire.PostgreSql;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -78,6 +80,15 @@ builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddScoped<IHealthScoreService, HealthScoreService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
+// Alert Services (Anomaly-based alerting)
+builder.Services.AddScoped<IAlertService, AlertService>();
+
+// Health Report Services
+builder.Services.AddScoped<IHealthReportService, HealthReportService>();
+
+// Predictive Alert Services
+builder.Services.AddScoped<IPredictiveAlertService, PredictiveAlertService>();
+
 // Background Job Processing with Hangfire
 var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") ?? connectionString;
 builder.Services.AddHangfire(config =>
@@ -85,7 +96,8 @@ builder.Services.AddHangfire(config =>
     config
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
         .UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings();
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(hangfireConnectionString);
 });
 builder.Services.AddHangfireServer();
 builder.Services.AddScoped<IBackgroundJobService, RecurringJobScheduler>();
