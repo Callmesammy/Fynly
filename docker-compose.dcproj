@@ -11,6 +11,7 @@
     <None Include="CHECKPOINT_3_3_1_COMPLETE.md" />
     <None Include="CHECKPOINT_3_3_3_PLAN.md" />
     <None Include="CHECKPOINT_4_1_1_COMPLETE.md" />
+    <None Include="CHECKPOINT_4_1_2_STATUS.md" />
     <None Include="COMPLETE_TEST_SUMMARY.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>

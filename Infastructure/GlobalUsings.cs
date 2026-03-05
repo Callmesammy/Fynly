@@ -11,6 +11,7 @@ global using AiCFO.Domain.Abstractions;
 global using AiCFO.Domain.Entities;
 global using AiCFO.Domain.ValueObjects;
 global using AiCFO.Infrastructure.Services;
+global using AiCFO.Infrastructure.Persistence;
 global using AiCFO.Infrastructure.Persistence.Configurations;
 global using AiCFO.Application.Common;
 global using Microsoft.AspNetCore.Http;

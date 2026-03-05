@@ -69,6 +69,12 @@ builder.Services.AddScoped<IReconciliationService, ReconciliationService>();
 // Accounting Validation & Rules
 builder.Services.AddScoped<IAccountingValidationService, AccountingValidationService>();
 
+// AI Services (Anomaly Detection, Prediction, Health Scoring, Recommendations)
+builder.Services.AddScoped<IAnomalyDetectionService, AnomalyDetectionService>();
+builder.Services.AddScoped<IPredictionService, PredictionService>();
+builder.Services.AddScoped<IHealthScoreService, HealthScoreService>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!";
 var key = Encoding.ASCII.GetBytes(jwtSecret);
 
