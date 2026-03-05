@@ -19,12 +19,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating overall financial health");
             var health = FinancialHealthScore.Create(75m, new() { "Strong profitability" }, new(), new());
-            return Result.Ok(health);
+            return Result<FinancialHealthScore>.Ok(health);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating overall health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<FinancialHealthScore>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -34,12 +34,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating liquidity health");
             var metrics = new List<HealthMetricDto>();
-            return Result.Ok(new DimensionHealthScoreDto(HealthDimension.Liquidity, 75m, "Good", metrics, new(), 0.25m));
+            return Result<DimensionHealthScoreDto>.Ok(new DimensionHealthScoreDto(HealthDimension.Liquidity, 75m, "Good", metrics, new(), 0.25m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating liquidity health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -49,12 +49,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating profitability health");
             var metrics = new List<HealthMetricDto>();
-            return Result.Ok(new DimensionHealthScoreDto(HealthDimension.Profitability, 75m, "Good", metrics, new(), 0.25m));
+            return Result<DimensionHealthScoreDto>.Ok(new DimensionHealthScoreDto(HealthDimension.Profitability, 75m, "Good", metrics, new(), 0.25m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating profitability health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -64,12 +64,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating solvency health");
             var metrics = new List<HealthMetricDto>();
-            return Result.Ok(new DimensionHealthScoreDto(HealthDimension.Solvency, 75m, "Good", metrics, new(), 0.20m));
+            return Result<DimensionHealthScoreDto>.Ok(new DimensionHealthScoreDto(HealthDimension.Solvency, 75m, "Good", metrics, new(), 0.20m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating solvency health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -79,12 +79,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating efficiency health");
             var metrics = new List<HealthMetricDto>();
-            return Result.Ok(new DimensionHealthScoreDto(HealthDimension.Efficiency, 75m, "Good", metrics, new(), 0.15m));
+            return Result<DimensionHealthScoreDto>.Ok(new DimensionHealthScoreDto(HealthDimension.Efficiency, 75m, "Good", metrics, new(), 0.15m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating efficiency health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -94,12 +94,12 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Calculating growth health");
             var metrics = new List<HealthMetricDto>();
-            return Result.Ok(new DimensionHealthScoreDto(HealthDimension.Growth, 75m, "Good", metrics, new(), 0.15m));
+            return Result<DimensionHealthScoreDto>.Ok(new DimensionHealthScoreDto(HealthDimension.Growth, 75m, "Good", metrics, new(), 0.15m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating growth health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -109,16 +109,16 @@ public class HealthScoreService : IHealthScoreService
         {
             _logger.LogInformation("Retrieving comprehensive health assessment");
             var overall = await CalculateOverallHealthAsync();
-            if (!overall.IsSuccess) return Result.Fail("Unable to calculate");
-            
+            if (!overall.IsSuccess) return Result<ComprehensiveHealthScoreDto>.Fail("Unable to calculate");
+
             var metrics = new List<HealthMetricDto>();
             var dim = new DimensionHealthScoreDto(HealthDimension.Liquidity, 75m, "Good", metrics, new(), 0.25m);
-            return Result.Ok(new ComprehensiveHealthScoreDto(overall.Data, dim, dim, dim, dim, dim, new(), new(), DateTime.UtcNow, null));
+            return Result<ComprehensiveHealthScoreDto>.Ok(new ComprehensiveHealthScoreDto(overall.Value, dim, dim, dim, dim, dim, new(), new(), DateTime.UtcNow, null));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving comprehensive health");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<ComprehensiveHealthScoreDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -127,12 +127,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Retrieving health score history");
-            return Result.Ok(new List<HealthScoreHistoryDto>());
+            return Result<List<HealthScoreHistoryDto>>.Ok(new List<HealthScoreHistoryDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving health history");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<HealthScoreHistoryDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -141,12 +141,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Identifying health improvement opportunities");
-            return Result.Ok(new List<HealthImprovementDto>());
+            return Result<List<HealthImprovementDto>>.Ok(new List<HealthImprovementDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error identifying improvement opportunities");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<HealthImprovementDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -155,12 +155,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Retrieving health alerts");
-            return Result.Ok(new List<HealthAlertDto>());
+            return Result<List<HealthAlertDto>>.Ok(new List<HealthAlertDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving health alerts");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<HealthAlertDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -169,12 +169,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Comparing to industry benchmark");
-            return Result.Ok(new HealthBenchmarkDto(75m, 70m, 65m, "A", new(), new(), new()));
+            return Result<HealthBenchmarkDto>.Ok(new HealthBenchmarkDto(75m, 70m, 65m, "A", new(), new(), new()));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error comparing to benchmark");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<HealthBenchmarkDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -183,12 +183,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Retrieving details for {Dimension}", dimension);
-            return Result.Ok(new DimensionDetailDto(dimension, 75m, new(), new(), new(), new()));
+            return Result<DimensionDetailDto>.Ok(new DimensionDetailDto(dimension, 75m, new(), new(), new(), new()));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving dimension details");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DimensionDetailDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -197,12 +197,12 @@ public class HealthScoreService : IHealthScoreService
         try
         {
             _logger.LogInformation("Running stress test scenarios");
-            return Result.Ok(new List<StressTestResultDto>());
+            return Result<List<StressTestResultDto>>.Ok(new List<StressTestResultDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error running stress test");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<StressTestResultDto>>.Fail($"Error: {ex.Message}");
         }
     }
 }

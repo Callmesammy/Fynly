@@ -38,9 +38,9 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             // Analyze amount for outliers
             var amountAnomalies = await DetectUnusualAmountsAsync(accountId, 90);
-            if (amountAnomalies.IsSuccess)
+            if (amountAnomalies.IsSuccess && amountAnomalies.Value != null)
             {
-                var significantAmountAnomalies = amountAnomalies.Data
+                var significantAmountAnomalies = amountAnomalies.Value
                     .Where(a => a.IsSignificant && a.ConfidencePercentage >= 75)
                     .ToList();
                 anomalies.AddRange(significantAmountAnomalies);
@@ -49,9 +49,9 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             // Analyze frequency
             var frequencyAnomalies = await DetectUnusualFrequencyAsync(accountId, 90);
-            if (frequencyAnomalies.IsSuccess)
+            if (frequencyAnomalies.IsSuccess && frequencyAnomalies.Value != null)
             {
-                var significantFrequencyAnomalies = frequencyAnomalies.Data
+                var significantFrequencyAnomalies = frequencyAnomalies.Value
                     .Where(a => a.IsSignificant && a.ConfidencePercentage >= 75)
                     .ToList();
                 anomalies.AddRange(significantFrequencyAnomalies);
@@ -60,9 +60,9 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             // Check for duplicate patterns
             var duplicateAnomalies = await DetectDuplicatePatternsAsync(accountId, 90);
-            if (duplicateAnomalies.IsSuccess)
+            if (duplicateAnomalies.IsSuccess && duplicateAnomalies.Value != null)
             {
-                var significantDuplicates = duplicateAnomalies.Data
+                var significantDuplicates = duplicateAnomalies.Value
                     .Where(a => a.IsSignificant && a.ConfidencePercentage >= 70)
                     .ToList();
                 anomalies.AddRange(significantDuplicates);
@@ -78,7 +78,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 "Journal entry analysis complete: {Summary}",
                 summary);
 
-            return Result.Ok(new AnomalyDetectionResult(
+            return Result<AnomalyDetectionResult>.Ok(new AnomalyDetectionResult(
                 hasAnomalies,
                 anomalies,
                 Math.Min(riskScore, 100m),
@@ -87,7 +87,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error analyzing journal entry {JournalEntryId}", journalEntryId);
-            return Result.Fail($"Error analyzing journal entry: {ex.Message}");
+            return Result<AnomalyDetectionResult>.Fail($"Error analyzing journal entry: {ex.Message}");
         }
     }
 
@@ -167,12 +167,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 ? $"Detected {anomalies.Count} anomaly(ies) with risk score {Math.Min(riskScore, 100m):F0}%"
                 : "No significant anomalies detected";
 
-            return Result.Ok(new AnomalyDetectionResult(hasAnomalies, anomalies, Math.Min(riskScore, 100m), summary));
+            return Result<AnomalyDetectionResult>.Ok(new AnomalyDetectionResult(hasAnomalies, anomalies, Math.Min(riskScore, 100m), summary));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error analyzing bank transaction {BankTransactionId}", bankTransactionId);
-            return Result.Fail($"Error analyzing bank transaction: {ex.Message}");
+            return Result<AnomalyDetectionResult>.Fail($"Error analyzing bank transaction: {ex.Message}");
         }
     }
 
@@ -186,14 +186,14 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             var cutoffDate = DateTime.UtcNow.AddDays(-lookbackDays);
             var journalLines = await _context.JournalLines
-                .Where(jl => jl.JournalEntry.ChartOfAccountsId == accountId &&
+                .Where(jl => jl.JournalEntry.Id == accountId &&
                        jl.JournalEntry.TenantId == _tenantContext.TenantId &&
                        jl.CreatedAt >= cutoffDate)
                 .Select(jl => jl.Amount.Amount)
                 .ToListAsync();
 
             if (journalLines.Count < 5)
-                return Result.Ok(new List<AnomalyScore>());
+                return Result<List<AnomalyScore>>.Ok(new List<AnomalyScore>());
 
             var mean = journalLines.Average();
             var stdDev = CalculateStandardDeviation(journalLines, mean);
@@ -204,7 +204,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 foreach (var amount in journalLines)
                 {
                     var zScore = Math.Abs((amount - mean) / stdDev);
-                    if (zScore > 2.5) // 2.5 standard deviations
+                    if (zScore > 2.5m) // 2.5 standard deviations
                     {
                         var confidence = Math.Min(70m + ((zScore - 2.5m) * 15), 99m);
                         var anomaly = AnomalyScore.Create(
@@ -225,12 +225,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
             }
 
             _logger.LogInformation("Detected {AnomalyCount} unusual amounts", anomalies.Count);
-            return Result.Ok(anomalies);
+            return Result<List<AnomalyScore>>.Ok(anomalies);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error detecting unusual amounts");
-            return Result.Fail($"Error detecting unusual amounts: {ex.Message}");
+            return Result<List<AnomalyScore>>.Fail($"Error detecting unusual amounts: {ex.Message}");
         }
     }
 
@@ -244,7 +244,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             var cutoffDate = DateTime.UtcNow.AddDays(-lookbackDays);
             var dailyCounts = await _context.JournalLines
-                .Where(jl => jl.JournalEntry.ChartOfAccountsId == accountId &&
+                .Where(jl => jl.JournalEntry.Id == accountId &&
                        jl.JournalEntry.TenantId == _tenantContext.TenantId &&
                        jl.CreatedAt >= cutoffDate)
                 .GroupBy(jl => jl.CreatedAt.Date)
@@ -252,7 +252,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 .ToListAsync();
 
             if (dailyCounts.Count < 5)
-                return Result.Ok(new List<AnomalyScore>());
+                return Result<List<AnomalyScore>>.Ok(new List<AnomalyScore>());
 
             var counts = dailyCounts.Select(dc => (decimal)dc.Count).ToList();
             var mean = counts.Average();
@@ -269,7 +269,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                         var confidence = Math.Min(65m + ((zScore - 2) * 12), 98m);
                         var anomaly = AnomalyScore.Create(
                             confidence,
-                            zScore > 2.5 ? AnomalySeverity.High : AnomalySeverity.Medium,
+                            zScore > 2.5m ? AnomalySeverity.High : AnomalySeverity.Medium,
                             AnomalyType.UnusualFrequency,
                             $"Frequency {dc.Count} transactions on {dc.Date:yyyy-MM-dd} deviates {zScore:F2} std devs from mean {mean:F2}",
                             new Dictionary<string, object>
@@ -285,12 +285,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
             }
 
             _logger.LogInformation("Detected {AnomalyCount} unusual frequency patterns", anomalies.Count);
-            return Result.Ok(anomalies);
+            return Result<List<AnomalyScore>>.Ok(anomalies);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error detecting unusual frequency");
-            return Result.Fail($"Error detecting unusual frequency: {ex.Message}");
+            return Result<List<AnomalyScore>>.Fail($"Error detecting unusual frequency: {ex.Message}");
         }
     }
 
@@ -304,7 +304,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             var cutoffDate = DateTime.UtcNow.AddDays(-lookbackDays);
             var patterns = await _context.JournalLines
-                .Where(jl => jl.JournalEntry.ChartOfAccountsId == accountId &&
+                .Where(jl => jl.JournalEntry.Id == accountId &&
                        jl.JournalEntry.TenantId == _tenantContext.TenantId &&
                        jl.CreatedAt >= cutoffDate)
                 .GroupBy(jl => new { jl.Amount, jl.Description })
@@ -339,12 +339,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
             }
 
             _logger.LogInformation("Detected {AnomalyCount} duplicate patterns", anomalies.Count);
-            return Result.Ok(anomalies);
+            return Result<List<AnomalyScore>>.Ok(anomalies);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error detecting duplicate patterns");
-            return Result.Fail($"Error detecting duplicate patterns: {ex.Message}");
+            return Result<List<AnomalyScore>>.Fail($"Error detecting duplicate patterns: {ex.Message}");
         }
     }
 
@@ -358,7 +358,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
 
             var cutoffDate = DateTime.UtcNow.AddDays(-lookbackDays);
             var timeSeries = await _context.JournalLines
-                .Where(jl => jl.JournalEntry.ChartOfAccountsId == accountId &&
+                .Where(jl => jl.JournalEntry.Id == accountId &&
                        jl.JournalEntry.TenantId == _tenantContext.TenantId &&
                        jl.CreatedAt >= cutoffDate)
                 .OrderBy(jl => jl.CreatedAt)
@@ -366,7 +366,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 .ToListAsync();
 
             if (timeSeries.Count < 10)
-                return Result.Ok(new List<AnomalyScore>());
+                return Result<List<AnomalyScore>>.Ok(new List<AnomalyScore>());
 
             var amounts = timeSeries.Select(ts => ts.Amount).ToList();
             var movingAvg = CalculateMovingAverage(amounts, 7);
@@ -378,7 +378,7 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 var predictedValue = movingAvg[i - 7];
                 var deviation = Math.Abs(actualValue - predictedValue) / (predictedValue > 0 ? predictedValue : 1);
 
-                if (deviation > 0.5) // 50% deviation from trend
+                if (deviation > 0.5m) // 50% deviation from trend
                 {
                     var confidence = Math.Min(70m + (decimal)(deviation * 50), 95m);
                     var anomaly = AnomalyScore.Create(
@@ -398,12 +398,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
             }
 
             _logger.LogInformation("Detected {AnomalyCount} time-series anomalies", anomalies.Count);
-            return Result.Ok(anomalies);
+            return Result<List<AnomalyScore>>.Ok(anomalies);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error detecting time-series anomalies");
-            return Result.Fail($"Error detecting time-series anomalies: {ex.Message}");
+            return Result<List<AnomalyScore>>.Fail($"Error detecting time-series anomalies: {ex.Message}");
         }
     }
 
@@ -428,9 +428,9 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                     unmatchedTx.Description,
                     unmatchedTx.TransactionDate);
 
-                if (result.IsSuccess && result.Data.HasAnomalies)
+                if (result.IsSuccess && result.Value?.HasAnomalies == true)
                 {
-                    foreach (var anomaly in result.Data.Anomalies.Where(a => a.Severity >= minSeverity))
+                    foreach (var anomaly in result.Value.Anomalies.Where(a => a.Severity >= minSeverity))
                     {
                         anomalyDtos.Add(new AnomalyDto(
                             Guid.NewGuid(),
@@ -445,12 +445,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 }
             }
 
-            return Result.Ok(anomalyDtos.OrderByDescending(a => a.Score.Severity).ToList());
+            return Result<List<AnomalyDto>>.Ok(anomalyDtos.OrderByDescending(a => a.Score.Severity).ToList());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error scanning unmatched transactions");
-            return Result.Fail($"Error scanning unmatched transactions: {ex.Message}");
+            return Result<List<AnomalyDto>>.Fail($"Error scanning unmatched transactions: {ex.Message}");
         }
     }
 
@@ -481,9 +481,9 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                     tx.Description,
                     tx.TransactionDate);
 
-                if (result.IsSuccess && result.Data.HasAnomalies)
+                if (result.IsSuccess && result.Value?.HasAnomalies == true)
                 {
-                    foreach (var anomaly in result.Data.Anomalies)
+                    foreach (var anomaly in result.Value.Anomalies)
                     {
                         if (severityFilter == null || anomaly.Severity >= severityFilter)
                         {
@@ -501,12 +501,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 }
             }
 
-            return Result.Ok(anomalies.OrderByDescending(a => a.Score.ConfidencePercentage).ToList());
+            return Result<List<AnomalyDto>>.Ok(anomalies.OrderByDescending(a => a.Score.ConfidencePercentage).ToList());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving recent anomalies");
-            return Result.Fail($"Error retrieving recent anomalies: {ex.Message}");
+            return Result<List<AnomalyDto>>.Fail($"Error retrieving recent anomalies: {ex.Message}");
         }
     }
 
@@ -518,12 +518,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
         {
             _logger.LogInformation("Dismissing anomaly {AnomalyId}", anomalyId);
             // In a real implementation, this would update an anomalies table
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error dismissing anomaly");
-            return Result.Fail($"Error dismissing anomaly: {ex.Message}");
+            return Result<bool>.Fail($"Error dismissing anomaly: {ex.Message}");
         }
     }
 
@@ -535,12 +535,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
         {
             _logger.LogInformation("Flagging anomaly {AnomalyId} as false positive: {Reason}", anomalyId, reason);
             // This would help retrain the ML models
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error flagging false positive");
-            return Result.Fail($"Error flagging false positive: {ex.Message}");
+            return Result<bool>.Fail($"Error flagging false positive: {ex.Message}");
         }
     }
 
@@ -560,12 +560,12 @@ public class AnomalyDetectionService : IAnomalyDetectionService
                 Trends: new(),
                 CalculatedAt: DateTime.UtcNow);
 
-            return Result.Ok(stats);
+            return Result<AnomalyStatsDto>.Ok(stats);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating anomaly statistics");
-            return Result.Fail($"Error calculating anomaly statistics: {ex.Message}");
+            return Result<AnomalyStatsDto>.Fail($"Error calculating anomaly statistics: {ex.Message}");
         }
     }
 

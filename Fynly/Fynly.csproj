@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -12,22 +12,22 @@
   <ItemGroup>
     <!-- API Documentation -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="1.2.35" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.13.1" />
 
     <!-- Container Tools -->
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
 
     <!-- Authentication & Security -->
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
 
     <!-- Logging & Monitoring -->
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.1" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="8.2.0" />
 
     <!-- Real-time Communication -->
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.9" />
   </ItemGroup>
 
   <ItemGroup>

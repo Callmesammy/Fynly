@@ -21,12 +21,12 @@ public class PredictionService : IPredictionService
             var prediction = FinancialPrediction.Create(
                 new Money(0, Currency.FromCode(CurrencyCode.USD)),
                 75m, DateTime.UtcNow, DateTime.UtcNow, predictionDate, "LinearRegression", new());
-            return Result.Ok(prediction);
+            return Result<FinancialPrediction>.Ok(prediction);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting account balance");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<FinancialPrediction>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -36,12 +36,12 @@ public class PredictionService : IPredictionService
         {
             _logger.LogInformation("Predicting cash flow");
             var pred = FinancialPrediction.Create(new Money(0, Currency.FromCode(CurrencyCode.USD)), 75m, DateTime.UtcNow, periodStart, periodEnd, "CashFlowModel", new());
-            return Result.Ok(new CashFlowPredictionDto(periodStart, periodEnd, pred, pred, pred, 75m));
+            return Result<CashFlowPredictionDto>.Ok(new CashFlowPredictionDto(periodStart, periodEnd, pred, pred, pred, 75m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting cash flow");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<CashFlowPredictionDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -50,12 +50,12 @@ public class PredictionService : IPredictionService
         try
         {
             var prediction = FinancialPrediction.Create(new Money(0, Currency.FromCode(CurrencyCode.USD)), 75m, DateTime.UtcNow, periodStart, periodEnd, "RevenueModel", new());
-            return Result.Ok(prediction);
+            return Result<FinancialPrediction>.Ok(prediction);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting revenue");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<FinancialPrediction>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -64,12 +64,12 @@ public class PredictionService : IPredictionService
         try
         {
             var prediction = FinancialPrediction.Create(new Money(0, Currency.FromCode(CurrencyCode.USD)), 75m, DateTime.UtcNow, periodStart, periodEnd, "ExpenseModel", new());
-            return Result.Ok(prediction);
+            return Result<FinancialPrediction>.Ok(prediction);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting expenses");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<FinancialPrediction>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -78,12 +78,12 @@ public class PredictionService : IPredictionService
         try
         {
             var prediction = FinancialPrediction.Create(new Money(0, Currency.FromCode(CurrencyCode.USD)), 75m, DateTime.UtcNow, periodStart, periodEnd, "ProfitabilityModel", new());
-            return Result.Ok(prediction);
+            return Result<FinancialPrediction>.Ok(prediction);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting profitability");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<FinancialPrediction>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -91,12 +91,12 @@ public class PredictionService : IPredictionService
     {
         try
         {
-            return Result.Ok(new DatePredictionDto(accountId, targetBalance, null, 50m, "Insufficient data"));
+            return Result<DatePredictionDto>.Ok(new DatePredictionDto(accountId, targetBalance, null, 50m, "Insufficient data"));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error predicting when balance reached");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<DatePredictionDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -104,12 +104,12 @@ public class PredictionService : IPredictionService
     {
         try
         {
-            return Result.Ok(new List<FinancialPredictionDto>());
+            return Result<List<FinancialPredictionDto>>.Ok(new List<FinancialPredictionDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving recent predictions");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<FinancialPredictionDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -117,12 +117,12 @@ public class PredictionService : IPredictionService
     {
         try
         {
-            return Result.Ok(new PredictionAccuracyDto(0m, 0m, 0, evaluationStart, evaluationEnd, "Moderate"));
+            return Result<PredictionAccuracyDto>.Ok(new PredictionAccuracyDto(0m, 0m, 0, evaluationStart, evaluationEnd, "Moderate"));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error evaluating prediction accuracy");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<PredictionAccuracyDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -130,12 +130,12 @@ public class PredictionService : IPredictionService
     {
         try
         {
-            return Result.Ok(new PredictionConfidenceDto(50m, 95m, 75m, 75m, 5, 10, 8, 2));
+            return Result<PredictionConfidenceDto>.Ok(new PredictionConfidenceDto(50m, 95m, 75m, 75m, 5, 10, 8, 2));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error analyzing confidence");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<PredictionConfidenceDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -143,12 +143,12 @@ public class PredictionService : IPredictionService
     {
         try
         {
-            return Result.Ok(new List<PredictabilityScoreDto>());
+            return Result<List<PredictabilityScoreDto>>.Ok(new List<PredictabilityScoreDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating predictability scores");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<PredictabilityScoreDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -157,12 +157,12 @@ public class PredictionService : IPredictionService
         try
         {
             var pred = FinancialPrediction.Create(new Money(0, Currency.FromCode(CurrencyCode.USD)), 75m, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow.AddMonths(forecastMonths), "Comprehensive", new());
-            return Result.Ok(new ComprehensiveForecastDto(DateTime.UtcNow, forecastMonths, new(), pred, pred, pred, 75m));
+            return Result<ComprehensiveForecastDto>.Ok(new ComprehensiveForecastDto(DateTime.UtcNow, forecastMonths, new(), pred, pred, pred, 75m));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating trend forecast");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<ComprehensiveForecastDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -171,12 +171,12 @@ public class PredictionService : IPredictionService
         try
         {
             _logger.LogInformation("Retraining prediction models");
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retraining models");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<bool>.Fail($"Error: {ex.Message}");
         }
     }
 }

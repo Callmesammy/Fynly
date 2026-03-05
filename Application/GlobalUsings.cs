@@ -14,3 +14,4 @@ global using AiCFO.Domain.Rules;
 global using AiCFO.Application.Common;
 global using AiCFO.Application.Dtos.Auth;
 global using AiCFO.Application.Features.Auth.Commands;
+global using AiCFO.Application.Features.BackgroundJobs;

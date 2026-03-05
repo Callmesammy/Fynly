@@ -2,7 +2,10 @@ using AiCFO.API.Middleware;
 using AiCFO.Application.Services;
 using AiCFO.Infrastructure.Persistence;
 using AiCFO.Infrastructure.Services;
+using AiCFO.Infastructure.Services;
 using AiCFO.Infrastructure.BankIntegration;
+using AiCFO.Application.Features.BackgroundJobs;
+using Hangfire;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -75,6 +78,24 @@ builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddScoped<IHealthScoreService, HealthScoreService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
+// Background Job Processing with Hangfire
+var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") ?? connectionString;
+builder.Services.AddHangfire(config =>
+{
+    config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(hangfireConnectionString);
+});
+builder.Services.AddHangfireServer(options =>
+{
+    options.WorkerCount = Environment.ProcessorCount;
+    options.Queues = new[] { "default", "critical", "scheduled" };
+    options.SchedulePollingInterval = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddScoped<IBackgroundJobService, AiCFO.Infrastructure.Services.RecurringJobScheduler>();
+
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!";
 var key = Encoding.ASCII.GetBytes(jwtSecret);
 
@@ -135,6 +156,14 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSerilogRequestLogging(options =>
 {
     options.IncludeQueryInRequestPath = true;
+});
+
+// Hangfire Dashboard (requires authorization in production)
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    DashboardTitle = "AI CFO - Background Jobs",
+    DisplayStorageConnectionString = false,
+    IsReadOnlyFunc = _ => false,
 });
 
 if (app.Environment.IsDevelopment())

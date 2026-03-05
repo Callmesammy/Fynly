@@ -30,12 +30,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating anomaly recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating anomaly recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -44,12 +44,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating prediction recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating prediction recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -58,12 +58,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating health improvement recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating health improvement recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -72,12 +72,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating cost optimization recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating cost optimization recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -86,12 +86,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating revenue growth recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating revenue growth recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -100,12 +100,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating cash flow recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating cash flow recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -114,12 +114,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Retrieving all recommendations");
-            return Result.Ok(new List<RecommendationDto>());
+            return Result<List<RecommendationDto>>.Ok(new List<RecommendationDto>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving all recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<RecommendationDto>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -128,12 +128,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Retrieving recommendations for account {AccountId}", accountId);
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving account recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -142,12 +142,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Retrieving urgent recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving urgent recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -156,12 +156,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Acknowledging recommendation {RecommendationId}", recommendationId);
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error acknowledging recommendation");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<bool>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -170,12 +170,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Dismissing recommendation {RecommendationId}", recommendationId);
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error dismissing recommendation");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<bool>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -184,12 +184,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Marking recommendation {RecommendationId} as implemented", recommendationId);
-            return Result.Ok(true);
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error marking recommendation as implemented");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<bool>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -198,12 +198,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating dashboard recommendations");
-            return Result.Ok(new List<AIRecommendation>());
+            return Result<List<AIRecommendation>>.Ok(new List<AIRecommendation>());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating dashboard recommendations");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<List<AIRecommendation>>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -212,12 +212,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Calculating recommendation statistics");
-            return Result.Ok(new RecommendationStatsDto(0, 0, 0, 0, 0, 0m, 0m, 0m, new(0, 0, 0, 0, 0, 0)));
+            return Result<RecommendationStatsDto>.Ok(new RecommendationStatsDto(0, 0, 0, 0, 0, 0m, 0m, 0m, new(0, 0, 0, 0, 0, 0)));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating recommendation statistics");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<RecommendationStatsDto>.Fail($"Error: {ex.Message}");
         }
     }
 
@@ -226,12 +226,12 @@ public class RecommendationService : IRecommendationService
         try
         {
             _logger.LogInformation("Generating recommendation report");
-            return Result.Ok(new RecommendationReportDto(DateTime.UtcNow, periodStart, periodEnd, new(), new(), new(0, 0, 0, 0, 0, 0m, 0m, 0m, new(0, 0, 0, 0, 0, 0)), new(), "Summary"));
+            return Result<RecommendationReportDto>.Ok(new RecommendationReportDto(DateTime.UtcNow, periodStart, periodEnd, new(), new(), new(0, 0, 0, 0, 0, 0m, 0m, 0m, new(0, 0, 0, 0, 0, 0)), new(), "Summary"));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating recommendation report");
-            return Result.Fail($"Error: {ex.Message}");
+            return Result<RecommendationReportDto>.Fail($"Error: {ex.Message}");
         }
     }
 }
