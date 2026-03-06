@@ -60,8 +60,8 @@ public class RegisterCommandHandlerTests
         result.Value!.AccessToken.Should().Be("access_token");
         result.Value!.RefreshToken.Should().Be("refresh_token");
         result.Value!.User.Email.Should().Be("test@example.com");
-        result.Value!.User.FirstName.Should().Be("John");
-        result.Value!.User.LastName.Should().Be("Doe");
+        result.Value!.User.Name.Should().Contain("John");
+        result.Value!.User.Name.Should().Contain("Doe");
 
         _mockAuthService.Verify(x => x.CreateUserAsync(It.IsAny<User>(), cancellationToken), Times.Once);
         _mockAuthService.Verify(x => x.UpdateUserAsync(It.IsAny<User>(), cancellationToken), Times.Once);

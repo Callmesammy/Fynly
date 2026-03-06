@@ -24,16 +24,26 @@ public record RefreshTokenRequest(
     string RefreshToken);
 
 /// <summary>
+/// DTO for user information in auth responses (matches frontend expectations).
+/// </summary>
+public record AuthUserDto(
+    string Id,
+    string Email,
+    string Name,           // Combined firstName + lastName
+    string TenantId);
+
+/// <summary>
 /// DTO for authentication response (access + refresh token).
+/// Matches frontend contract from audit specification.
 /// </summary>
 public record AuthResponse(
     string AccessToken,
     string RefreshToken,
-    DateTime ExpiresIn,
-    UserDto User);
+    int ExpiresIn,        // Seconds (15 minutes = 900)
+    AuthUserDto User);
 
 /// <summary>
-/// DTO for user information in auth responses.
+/// DTO for user information (legacy - kept for backward compatibility).
 /// </summary>
 public record UserDto(
     Guid Id,

@@ -67,6 +67,9 @@ public sealed record MatchScore
     public MatchType MatchType { get; init; }
     public string MatchReason { get; init; }
 
+    // EF Core parameterless constructor
+    public MatchScore() { }
+
     public MatchScore(
         decimal confidencePercentage,
         MatchType matchType,
@@ -115,13 +118,16 @@ public sealed record VarianceAmount
     public decimal Percentage { get; init; }  // Variance as percentage of transaction amount
     public bool IsSignificant { get; init; }  // > 1% variance
 
+    // EF Core parameterless constructor
+    public VarianceAmount() { }
+
     public VarianceAmount(Money transactionAmount, Money journalAmount)
     {
         if (transactionAmount.Amount < 0 || journalAmount.Amount < 0)
             throw new ArgumentException("Amounts must be non-negative");
 
         Amount = transactionAmount.Subtract(journalAmount);
-        
+
         if (transactionAmount.Amount > 0)
             Percentage = Math.Abs((Amount.Amount / transactionAmount.Amount) * 100);
         else
@@ -144,6 +150,9 @@ public sealed record TimelineVariance
     public TimeSpan TimeDifference { get; init; }
     public int DaysDifference { get; init; }
     public bool IsSignificant { get; init; }  // > 3 days
+
+    // EF Core parameterless constructor
+    public TimelineVariance() { }
 
     public TimelineVariance(DateTime transactionDate, DateTime journalDate)
     {

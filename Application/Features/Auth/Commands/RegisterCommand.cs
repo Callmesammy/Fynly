@@ -92,14 +92,12 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Au
             var response = new AuthResponse(
                 AccessToken: accessToken,
                 RefreshToken: refreshToken,
-                ExpiresIn: DateTime.UtcNow.AddMinutes(15),
-                User: new UserDto(
-                    Id: user.Id,
-                    TenantId: user.TenantId,
+                ExpiresIn: 900,  // 15 minutes in seconds
+                User: new AuthUserDto(
+                    Id: user.Id.ToString(),
                     Email: user.Email,
-                    FirstName: user.FirstName,
-                    LastName: user.LastName,
-                    IsActive: user.IsActive));
+                    Name: $"{user.FirstName} {user.LastName}",
+                    TenantId: user.TenantId.ToString()));
 
             return Result<AuthResponse>.Ok(response);
         }

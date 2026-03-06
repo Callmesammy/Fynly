@@ -57,7 +57,7 @@ public class LoginCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.AccessToken.Should().Be("access_token");
         result.Value!.RefreshToken.Should().Be("refresh_token");
-        result.Value!.User.Id.Should().Be(userId);
+        result.Value!.User.Id.Should().Be(userId.ToString());
     }
 
     [Fact]

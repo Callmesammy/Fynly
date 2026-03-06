@@ -51,7 +51,11 @@ public class ReconciliationMatchConfiguration : IEntityTypeConfiguration<Reconci
             varianceBuilder.OwnsOne(v => v.Amount, amountBuilder =>
             {
                 amountBuilder.Property(a => a.Amount).HasColumnName("VarianceAmount_Value").HasPrecision(18, 2);
-                amountBuilder.Property(a => a.Currency.Code).HasColumnName("VarianceAmount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+                amountBuilder.Property(a => a.Currency)
+                    .HasColumnName("VarianceAmount_CurrencyCode")
+                    .HasConversion(
+                        c => c.Code,
+                        code => Currency.FromCode(code));
             });
             varianceBuilder.Property(v => v.Percentage).HasColumnName("VariancePercentage");
             varianceBuilder.Property(v => v.IsSignificant).HasColumnName("IsSignificantVariance");
@@ -199,14 +203,22 @@ public class ReconciliationSessionConfiguration : IEntityTypeConfiguration<Recon
         builder.OwnsOne(x => x.TotalMatchedAmount, amountBuilder =>
         {
             amountBuilder.Property(a => a.Amount).HasColumnName("TotalMatchedAmount_Value").HasPrecision(18, 2);
-            amountBuilder.Property(a => a.Currency.Code).HasColumnName("TotalMatchedAmount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            amountBuilder.Property(a => a.Currency)
+                .HasColumnName("TotalMatchedAmount_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         // Owned TotalUnmatchedAmount
         builder.OwnsOne(x => x.TotalUnmatchedAmount, amountBuilder =>
         {
             amountBuilder.Property(a => a.Amount).HasColumnName("TotalUnmatchedAmount_Value").HasPrecision(18, 2);
-            amountBuilder.Property(a => a.Currency.Code).HasColumnName("TotalUnmatchedAmount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            amountBuilder.Property(a => a.Currency)
+                .HasColumnName("TotalUnmatchedAmount_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.CompletedAt);
@@ -256,7 +268,11 @@ public class UnmatchedBankTransactionConfiguration : IEntityTypeConfiguration<Un
         builder.OwnsOne(x => x.Amount, amountBuilder =>
         {
             amountBuilder.Property(a => a.Amount).HasColumnName("Amount_Value").HasPrecision(18, 2);
-            amountBuilder.Property(a => a.Currency.Code).HasColumnName("Amount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            amountBuilder.Property(a => a.Currency)
+                .HasColumnName("Amount_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.TransactionDate)
@@ -306,7 +322,11 @@ public class UnmatchedJournalEntryConfiguration : IEntityTypeConfiguration<Unmat
         builder.OwnsOne(x => x.Amount, amountBuilder =>
         {
             amountBuilder.Property(a => a.Amount).HasColumnName("Amount_Value").HasPrecision(18, 2);
-            amountBuilder.Property(a => a.Currency.Code).HasColumnName("Amount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            amountBuilder.Property(a => a.Currency)
+                .HasColumnName("Amount_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.EntryDate)

@@ -16,7 +16,6 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.IdentityModel.Tokens;
 global using Serilog;
 global using MediatR;
-global using Npgsql.EntityFrameworkCore.PostgreSQL;
 global using Hangfire;
 global using AiCFO.Application.Common;
 global using AiCFO.Application.Dtos.Auth;

@@ -52,6 +52,9 @@ public sealed record PredictiveThresholdValue
     public decimal? MaxValue { get; init; }
     public AlertSeverity Severity { get; init; }
 
+    // EF Core parameterless constructor
+    public PredictiveThresholdValue() { }
+
     private PredictiveThresholdValue(ThresholdType type, ThresholdOperator op, decimal value, decimal? maxValue, AlertSeverity severity)
     {
         Type = type;

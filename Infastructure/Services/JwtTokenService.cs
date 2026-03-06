@@ -1,6 +1,8 @@
 namespace AiCFO.Infrastructure.Services;
 
+using System.IdentityModel.Tokens.Jwt;
 using AiCFO.Application.Common;
+using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
 /// Token service implementation using simple base64 encoding.
@@ -20,13 +22,32 @@ public class JwtTokenService : ITokenService
 
     public string GenerateAccessToken(Guid userId, Guid tenantId, string email, TimeSpan? expiresIn = null)
     {
-        // Simplified token format: base64(userId|tenantId|email|expiresAt)
-        // TODO: Upgrade to proper JWT signing with private key
         var expirationTime = expiresIn ?? TimeSpan.FromMinutes(15);
         var expiresAt = DateTime.UtcNow.Add(expirationTime);
 
-        var tokenData = $"{userId}|{tenantId}|{email}|{expiresAt:O}";
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes(tokenData));
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!");
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim("sub", userId.ToString()),
+                new Claim("tenant_id", tenantId.ToString()),
+                new Claim("user_id", userId.ToString()),
+                new Claim("email", email),
+                new Claim("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+            }),
+            Expires = expiresAt,
+            Issuer = _configuration["Jwt:Issuer"] ?? "ai-cfo",
+            Audience = _configuration["Jwt:Audience"] ?? "ai-cfo-api",
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 
     public string GenerateRefreshToken()

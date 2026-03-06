@@ -20,7 +20,14 @@ public class BankConnectionConfiguration : IEntityTypeConfiguration<BankConnecti
 
         builder.Property(b => b.TenantId).IsRequired().HasMaxLength(36);
         builder.Property(b => b.Provider).IsRequired().HasConversion<int>();
-        builder.Property(b => b.BankCode).IsRequired();
+
+        builder.Property(b => b.BankCode)
+            .IsRequired()
+            .HasConversion(
+                bc => bc.Value,
+                value => new BankCode(value))
+            .HasMaxLength(20);
+
         builder.Property(b => b.BankName).IsRequired().HasMaxLength(200);
         builder.Property(b => b.Status).IsRequired().HasConversion<int>();
         builder.Property(b => b.AccessToken).HasMaxLength(1000);
@@ -55,14 +62,29 @@ public class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
         builder.HasKey(a => a.Id);
 
         builder.Property(a => a.BankConnectionId).IsRequired();
-        builder.Property(a => a.BankAccountId).IsRequired();
+
+        builder.Property(a => a.BankAccountId)
+            .IsRequired()
+            .HasConversion(
+                ba => ba.Value,
+                value => new BankAccountId(value))
+            .HasMaxLength(100);
+
         builder.Property(a => a.AccountNumber).IsRequired().HasMaxLength(50);
         builder.Property(a => a.AccountName).IsRequired().HasMaxLength(200);
-        builder.OwnsOne(a => a.Currency, c => c.ToJson());
+        builder.Property(a => a.Currency)
+            .HasColumnName("Currency_Code")
+            .HasConversion(
+                c => c.Code,
+                code => Currency.FromCode(code));
         builder.OwnsOne(a => a.CurrentBalance, cb =>
         {
             cb.Property(m => m.Amount).HasColumnName("CurrentBalance_Amount").HasPrecision(18, 2);
-            cb.Property(m => m.Currency.Code).HasColumnName("CurrentBalance_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            cb.Property(m => m.Currency)
+                .HasColumnName("CurrentBalance_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
         builder.Property(a => a.LastBalanceUpdate);
         builder.Property(a => a.CreatedAt).IsRequired();
@@ -98,7 +120,11 @@ public class BankTransactionConfiguration : IEntityTypeConfiguration<BankTransac
         builder.OwnsOne(t => t.Amount, a =>
         {
             a.Property(m => m.Amount).HasColumnName("Amount_Value").HasPrecision(18, 2);
-            a.Property(m => m.Currency.Code).HasColumnName("Amount_CurrencyCode").HasConversion<string>().HasMaxLength(3);
+            a.Property(m => m.Currency)
+                .HasColumnName("Amount_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
         builder.Property(t => t.TransactionType).IsRequired().HasConversion<int>();
         builder.Property(t => t.Description).IsRequired().HasMaxLength(500);

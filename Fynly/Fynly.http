@@ -1,4 +1,4 @@
-@Fynly_HostAddress = http://localhost:5115
+@Fynly_HostAddress = http://localhost:5000
 
 GET {{Fynly_HostAddress}}/weatherforecast/
 Accept: application/json

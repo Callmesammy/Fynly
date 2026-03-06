@@ -6,8 +6,11 @@ namespace AiCFO.Domain.ValueObjects;
 /// </summary>
 public sealed record Money
 {
-    public decimal Amount { get; }
-    public Currency Currency { get; }
+    public decimal Amount { get; init; }
+    public Currency Currency { get; init; }
+
+    // EF Core constructor - parameterless
+    public Money() : this(0m, Currency.FromCode(CurrencyCode.USD)) { }
 
     public Money(decimal amount, Currency currency)
     {

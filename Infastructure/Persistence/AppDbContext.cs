@@ -95,6 +95,7 @@ public class AppDbContext : DbContext
     /// <summary>
     /// Applies global query filters to enforce multi-tenancy data isolation.
     /// Ensures queries only return data for the current tenant.
+    /// Skips filtering for unauthenticated requests (TenantId == Guid.Empty).
     /// </summary>
     private void ApplyGlobalQueryFilters(ModelBuilder modelBuilder)
     {
@@ -103,13 +104,18 @@ public class AppDbContext : DbContext
             .Where(t => t.ClrType.IsAssignableTo(typeof(Entity)))
             .ToList();
 
+        // Only apply filters if tenant context is available and tenant is not empty
+        var tenantId = _tenantContext?.TenantId ?? Guid.Empty;
+        if (tenantId == Guid.Empty)
+            return;
+
         foreach (var entityType in entityTypes)
         {
             // Apply filter: e => e.TenantId == currentTenantId
             // This automatically filters all queries to current tenant
             var parameter = Expression.Parameter(entityType.ClrType, "e");
             var tenantIdProperty = Expression.Property(parameter, "TenantId");
-            var currentTenantId = Expression.Constant(_tenantContext?.TenantId ?? Guid.Empty);
+            var currentTenantId = Expression.Constant(tenantId);
             var comparison = Expression.Equal(tenantIdProperty, currentTenantId);
             var lambda = Expression.Lambda(comparison, parameter);
 

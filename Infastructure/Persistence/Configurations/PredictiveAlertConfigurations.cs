@@ -3,6 +3,7 @@ namespace AiCFO.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using AiCFO.Domain.Entities;
+using AiCFO.Domain.ValueObjects;
 
 /// <summary>
 /// EF Core configuration for PredictiveThreshold entity.
@@ -32,11 +33,27 @@ public class PredictiveThresholdConfiguration : IEntityTypeConfiguration<Predict
         // Owned type configuration for PredictiveThresholdValue
         builder.OwnsOne(t => t.ThresholdValue, ov =>
         {
-            ov.Property(v => v.Type).HasColumnName("ThresholdType").IsRequired();
-            ov.Property(v => v.Operator).HasColumnName("ThresholdOperator").IsRequired();
-            ov.Property(v => v.Value).HasPrecision(18, 6).IsRequired();
-            ov.Property(v => v.MaxValue).HasPrecision(18, 6);
-            ov.Property(v => v.Severity).HasColumnName("AlertSeverity").IsRequired();
+            ov.Property(v => v.Type)
+                .HasColumnName("ThresholdType")
+                .HasConversion<int>()
+                .IsRequired();
+
+            ov.Property(v => v.Operator)
+                .HasColumnName("ThresholdOperator")
+                .HasConversion<int>()
+                .IsRequired();
+
+            ov.Property(v => v.Value)
+                .HasPrecision(18, 6)
+                .IsRequired();
+
+            ov.Property(v => v.MaxValue)
+                .HasPrecision(18, 6);
+
+            ov.Property(v => v.Severity)
+                .HasColumnName("AlertSeverity")
+                .HasConversion<int>()
+                .IsRequired();
         });
 
         builder.Property(t => t.IsActive).IsRequired();

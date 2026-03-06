@@ -141,12 +141,12 @@ public class JournalEntryConfiguration : IEntityTypeConfiguration<JournalEntry>
             debits.Property(m => m.Amount)
                 .HasColumnName("TotalDebits")
                 .HasPrecision(18, 2);
-            debits.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("TotalDebits_CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            debits.Property(m => m.Currency)
+                .HasColumnName("TotalDebits_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.OwnsOne(x => x.TotalCredits, credits =>
@@ -154,12 +154,12 @@ public class JournalEntryConfiguration : IEntityTypeConfiguration<JournalEntry>
             credits.Property(m => m.Amount)
                 .HasColumnName("TotalCredits")
                 .HasPrecision(18, 2);
-            credits.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("TotalCredits_CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            credits.Property(m => m.Currency)
+                .HasColumnName("TotalCredits_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.Status)
@@ -231,12 +231,12 @@ public class JournalLineConfiguration : IEntityTypeConfiguration<JournalLine>
             amount.Property(m => m.Amount)
                 .HasColumnName("Amount")
                 .HasPrecision(18, 2);
-            amount.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            amount.Property(m => m.Currency)
+                .HasColumnName("CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.IsDebit)
@@ -283,18 +283,18 @@ public class AccountBalanceConfiguration : IEntityTypeConfiguration<AccountBalan
         builder.Property(x => x.BalanceDate)
             .IsRequired();
 
-        // Configure Money value objects
+        // Configure Money value objects with proper Currency conversion
         builder.OwnsOne(x => x.CurrentBalance, balance =>
         {
             balance.Property(m => m.Amount)
                 .HasColumnName("CurrentBalance")
                 .HasPrecision(18, 2);
-            balance.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("CurrentBalance_CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            balance.Property(m => m.Currency)
+                .HasColumnName("CurrentBalance_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.OwnsOne(x => x.DebitBalance, balance =>
@@ -302,12 +302,12 @@ public class AccountBalanceConfiguration : IEntityTypeConfiguration<AccountBalan
             balance.Property(m => m.Amount)
                 .HasColumnName("DebitBalance")
                 .HasPrecision(18, 2);
-            balance.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("DebitBalance_CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            balance.Property(m => m.Currency)
+                .HasColumnName("DebitBalance_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.OwnsOne(x => x.CreditBalance, balance =>
@@ -315,12 +315,12 @@ public class AccountBalanceConfiguration : IEntityTypeConfiguration<AccountBalan
             balance.Property(m => m.Amount)
                 .HasColumnName("CreditBalance")
                 .HasPrecision(18, 2);
-            balance.OwnsOne(m => m.Currency, currency =>
-            {
-                currency.Property(c => c.Code)
-                    .HasColumnName("CreditBalance_CurrencyCode")
-                    .HasConversion<string>();
-            });
+            
+            balance.Property(m => m.Currency)
+                .HasColumnName("CreditBalance_CurrencyCode")
+                .HasConversion(
+                    c => c.Code,
+                    code => Currency.FromCode(code));
         });
 
         builder.Property(x => x.LastUpdated)

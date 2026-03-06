@@ -50,12 +50,13 @@ services:
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=aicfo;Username=postgres;Password=postgres"
       ConnectionStrings__HangfireConnection: "Host=postgres;Port=5432;Database=aicfo_hangfire;Username=postgres;Password=postgres"
       Redis__ConnectionString: "redis:6379"
-      Jwt__Secret: "your-super-secret-key-min-32-characters-long!!"
+      Jwt__Secret: "change-this-to-a-secure-production-secret-min-32-chars"
       Jwt__Issuer: "ai-cfo"
       Jwt__Audience: "ai-cfo-api"
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     ports:
-      - "8080:8080"
+      - "5000:8080"
+      - "5001:8080"
     depends_on:
       postgres:
         condition: service_healthy

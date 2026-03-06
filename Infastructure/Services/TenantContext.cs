@@ -4,7 +4,7 @@ using AiCFO.Application.Common;
 
 /// <summary>
 /// Implementation of ITenantContext.
-/// Extracts tenant and user info from HttpContext.
+/// Extracts tenant and user info from HttpContext JWT claims.
 /// </summary>
 public class TenantContext : ITenantContext
 {
@@ -21,16 +21,20 @@ public class TenantContext : ITenantContext
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext is null)
-                throw new InvalidOperationException("HttpContext is not available");
+                return Guid.Empty;
 
+            // JWT claim takes precedence
             var tenantIdClaim = httpContext.User.FindFirst("tenant_id");
-            if (tenantIdClaim is null)
-                throw new InvalidOperationException("Tenant ID claim not found in token");
+            if (tenantIdClaim is not null && Guid.TryParse(tenantIdClaim.Value, out var tenantId))
+                return tenantId;
 
-            if (!Guid.TryParse(tenantIdClaim.Value, out var tenantId))
-                throw new InvalidOperationException("Invalid tenant ID format");
+            // Fallback to X-Tenant-Id header for public endpoints
+            var tenantIdHeader = httpContext.Request.Headers["X-Tenant-Id"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(tenantIdHeader) && Guid.TryParse(tenantIdHeader, out var tenantIdFromHeader))
+                return tenantIdFromHeader;
 
-            return tenantId;
+            // Return empty GUID for unauthenticated requests (e.g., registration)
+            return Guid.Empty;
         }
     }
 
@@ -42,6 +46,7 @@ public class TenantContext : ITenantContext
             if (httpContext is null)
                 throw new InvalidOperationException("HttpContext is not available");
 
+            // Try "sub" claim first (standard JWT), then "user_id" (custom)
             var userIdClaim = httpContext.User.FindFirst("sub") ?? httpContext.User.FindFirst("user_id");
             if (userIdClaim is null)
                 throw new InvalidOperationException("User ID claim not found in token");

@@ -28,8 +28,16 @@ public class AuthController : ControllerBase
         [FromHeader(Name = "X-Tenant-Id")] string? tenantIdHeader,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(tenantIdHeader, out var tenantId))
-            return BadRequest(ApiResponse<object>.Failure("Invalid or missing tenant ID"));
+        // Use tenant ID from header, or generate a new one if not provided
+        Guid tenantId;
+        if (string.IsNullOrEmpty(tenantIdHeader))
+        {
+            tenantId = Guid.NewGuid();
+        }
+        else if (!Guid.TryParse(tenantIdHeader, out tenantId))
+        {
+            return BadRequest(ApiResponse<object>.Failure("Invalid tenant ID format"));
+        }
 
         var command = new RegisterCommand(
             tenantId,
@@ -59,10 +67,13 @@ public class AuthController : ControllerBase
         [FromHeader(Name = "X-Tenant-Id")] string? tenantIdHeader,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(tenantIdHeader, out var tenantId))
-            return Unauthorized(ApiResponse<object>.Failure("Invalid or missing tenant ID"));
+        // Tenant ID is optional for login (will be determined by email lookup)
+        // But if provided, use it to scope the user lookup to that tenant
+        Guid tenantId = Guid.Empty;
+        if (!string.IsNullOrEmpty(tenantIdHeader) && !Guid.TryParse(tenantIdHeader, out tenantId))
+            return Unauthorized(ApiResponse<object>.Failure("Invalid tenant ID format"));
 
-        var command = new LoginCommand(tenantId, request.Email, request.Password);
+        var command = new LoginCommand(tenantId == Guid.Empty ? Guid.NewGuid() : tenantId, request.Email, request.Password);
         var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)
@@ -83,10 +94,12 @@ public class AuthController : ControllerBase
         [FromHeader(Name = "X-Tenant-Id")] string? tenantIdHeader,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(tenantIdHeader, out var tenantId))
-            return Unauthorized(ApiResponse<object>.Failure("Invalid or missing tenant ID"));
+        // Tenant ID is optional (if provided in header)
+        Guid tenantId = Guid.Empty;
+        if (!string.IsNullOrEmpty(tenantIdHeader) && !Guid.TryParse(tenantIdHeader, out tenantId))
+            return Unauthorized(ApiResponse<object>.Failure("Invalid tenant ID format"));
 
-        var command = new RefreshTokenCommand(tenantId, request.RefreshToken);
+        var command = new RefreshTokenCommand(tenantId == Guid.Empty ? Guid.NewGuid() : tenantId, request.RefreshToken);
         var result = await _mediator.Send(command, cancellationToken);
 
         if (!result.IsSuccess)

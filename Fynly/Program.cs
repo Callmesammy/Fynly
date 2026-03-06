@@ -1,13 +1,14 @@
 using AiCFO.API.Middleware;
 using AiCFO.Application.Services;
 using AiCFO.Application.Common;
+using AiCFO.Application.Features.Auth.Commands;
 using AiCFO.Infastructure.Services;
 using AiCFO.Infrastructure.Persistence;
 using AiCFO.Infrastructure.Services;
 using AiCFO.Infrastructure.BankIntegration;
 using AiCFO.Application.Features.BackgroundJobs;
 using Hangfire;
-using Hangfire.PostgreSql;
+using Hangfire.SqlServer;
 using Serilog;
 using Scalar.AspNetCore;
 
@@ -31,22 +32,22 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddHttpContextAccessor();
 
-// Entity Framework Core with PostgreSQL
+// Entity Framework Core with SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Host=localhost;Port=5432;Database=aicfo;Username=postgres;Password=postgres";
+    ?? "Server=localhost;Database=aicfo;Trusted_Connection=true;Encrypt=false;";
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     var tenantContext = sp.GetService<ITenantContext>();
-    options.UseNpgsql(connectionString, npgsqlOptions =>
+    options.UseSqlServer(connectionString, sqlServerOptions =>
     {
-        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorCodesToAdd: null);
+        sqlServerOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null);
     });
 });
 
 // CQRS with MediatR
 builder.Services.AddMediatR(config => 
 {
-    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    config.RegisterServicesFromAssembly(typeof(RegisterCommand).Assembly);
 });
 
 // Authentication & Authorization
@@ -70,7 +71,7 @@ builder.Services.AddScoped<IBankProviderFactory, BankProviderFactory>();
 
 // Reconciliation Services
 builder.Services.AddScoped<IReconciliationService, ReconciliationService>();
-
+builder.Services.AddSwaggerGen();
 // Accounting Validation & Rules
 builder.Services.AddScoped<IAccountingValidationService, AccountingValidationService>();
 
@@ -97,12 +98,18 @@ builder.Services.AddHangfire(config =>
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
-        .UsePostgreSqlStorage(hangfireConnectionString);
+        .UseSqlServerStorage(hangfireConnectionString);
 });
 builder.Services.AddHangfireServer();
 builder.Services.AddScoped<IBackgroundJobService, RecurringJobScheduler>();
 
-var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-min-32-characters-long!!";
+var jwtSecret = builder.Configuration["Jwt:Secret"];
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new InvalidOperationException(
+        "JWT secret is not configured. Set 'Jwt:Secret' in configuration, user secrets, or environment variables.");
+}
+
 var key = Encoding.ASCII.GetBytes(jwtSecret);
 
 builder.Services
@@ -136,9 +143,7 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://localhost:3000",
-                "http://localhost:3001",
-                "https://localhost:3000",
-                "https://localhost:3001"
+                "http://localhost:3001"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -174,6 +179,8 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
@@ -202,5 +209,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-app.Run();
